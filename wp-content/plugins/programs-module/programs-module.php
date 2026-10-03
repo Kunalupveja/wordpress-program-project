@@ -31,6 +31,22 @@ define( 'PROGRAMS_MODULE_FILE', __FILE__ );
 define( 'PROGRAMS_MODULE_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PROGRAMS_MODULE_URL', plugin_dir_url( __FILE__ ) );
 
+require_once PROGRAMS_MODULE_DIR . 'includes/class-programs-cpt.php';
+
+/**
+ * Boots the plugin components.
+ *
+ * Components register their own hooks; nothing is instantiated before
+ * `plugins_loaded` so that the whole plugin can be disabled cleanly.
+ *
+ * @return void
+ */
+function programs_module_bootstrap() {
+	$programs_cpt = new Programs_CPT();
+	$programs_cpt->register_hooks();
+}
+add_action( 'plugins_loaded', 'programs_module_bootstrap' );
+
 /**
  * Loads the plugin text domain.
  *
@@ -50,6 +66,12 @@ add_action( 'init', 'programs_module_load_textdomain' );
  * @return void
  */
 function programs_module_activate() {
+	// Register the content model first so the rules we are about to flush
+	// actually include the program post type and the program-type taxonomy.
+	$programs_cpt = new Programs_CPT();
+	$programs_cpt->register_post_type();
+	$programs_cpt->register_taxonomy();
+
 	update_option( 'programs_module_version', PROGRAMS_MODULE_VERSION );
 
 	flush_rewrite_rules();
