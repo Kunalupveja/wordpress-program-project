@@ -32,6 +32,7 @@ define( 'PROGRAMS_MODULE_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PROGRAMS_MODULE_URL', plugin_dir_url( __FILE__ ) );
 
 require_once PROGRAMS_MODULE_DIR . 'includes/class-programs-cpt.php';
+require_once PROGRAMS_MODULE_DIR . 'includes/class-programs-seeder.php';
 
 /**
  * Boots the plugin components.
@@ -71,6 +72,9 @@ function programs_module_activate() {
 	$programs_cpt = new Programs_CPT();
 	$programs_cpt->register_post_type();
 	$programs_cpt->register_taxonomy();
+
+	// The taxonomy has to exist before terms can be assigned to it.
+	Programs_Seeder::seed_terms();
 
 	update_option( 'programs_module_version', PROGRAMS_MODULE_VERSION );
 
