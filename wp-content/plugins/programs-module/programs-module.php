@@ -45,6 +45,9 @@ require_once PROGRAMS_MODULE_DIR . 'includes/class-programs-seeder.php';
 function programs_module_bootstrap() {
 	$programs_cpt = new Programs_CPT();
 	$programs_cpt->register_hooks();
+
+	$programs_seeder = new Programs_Seeder();
+	$programs_seeder->register_hooks();
 }
 add_action( 'plugins_loaded', 'programs_module_bootstrap' );
 
@@ -57,6 +60,12 @@ function programs_module_load_textdomain() {
 	load_plugin_textdomain( 'programs-module', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 }
 add_action( 'init', 'programs_module_load_textdomain' );
+
+if ( defined( 'WP_CLI' ) && WP_CLI ) {
+	require_once PROGRAMS_MODULE_DIR . 'includes/class-programs-cli.php';
+
+	WP_CLI::add_command( 'programs', 'Programs_CLI' );
+}
 
 /**
  * Runs on plugin activation.
@@ -74,7 +83,7 @@ function programs_module_activate() {
 	$programs_cpt->register_taxonomy();
 
 	// The taxonomy has to exist before terms can be assigned to it.
-	Programs_Seeder::seed_terms();
+	Programs_Seeder::seed_all();
 
 	update_option( 'programs_module_version', PROGRAMS_MODULE_VERSION );
 

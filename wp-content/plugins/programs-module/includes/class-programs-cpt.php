@@ -63,6 +63,29 @@ class Programs_CPT {
 	const DEFAULT_TERMS = array( 'undergraduate', 'postgraduate' );
 
 	/**
+	 * Meta key for the academic year, e.g. "2025-26".
+	 *
+	 * @var string
+	 */
+	const META_ACADEMIC_YEAR = 'program_academic_year';
+
+	/**
+	 * Meta key for the duration, e.g. "3 Years".
+	 *
+	 * @var string
+	 */
+	const META_DURATION = 'program_duration';
+
+	/**
+	 * Meta key for the repeater content sections.
+	 *
+	 * Stored as an array of arrays: title, description, optional image ID.
+	 *
+	 * @var string
+	 */
+	const META_CONTENT_SECTIONS = 'program_content_sections';
+
+	/**
 	 * Registers the hooks for this class.
 	 *
 	 * @return void
