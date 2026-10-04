@@ -1,0 +1,4 @@
+# Plugin-local ignores. The repository root .gitignore handles shared rules.
+node_modules/
+build/*.map
+*.log

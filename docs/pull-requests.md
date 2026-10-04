@@ -1,0 +1,117 @@
+# Pull Request - feature/cpt-setup -> dev
+
+## Title
+`feat: Programs Module - content structure (Task 2)`
+
+## Summary
+Implements Task 2 of the brief. Sets up the custom `programs-module`
+plugin (chosen over the theme for the content model per the
+TASK-UNDERSTANDING.md architecture), registers the `program` CPT and the
+hierarchical `program-type` taxonomy, creates the two required terms,
+and seeds ten sample programs (five undergraduate, five postgraduate)
+each with a featured image, a title and its meta values.
+
+This PR is one of four feature branches planned in
+TASK-UNDERSTANDING.md. Subsequent branches will add the React admin UI
+(Task 3), custom rewrite rules for `/programmes/undergraduate` and
+`/programmes/postgraduate` (Task 4), the reusable program card and
+detail page (Tasks 5-6), the Interactivity API filter (Task 7) and the
+click-tracking pipeline (Task 8).
+
+## What's in this PR
+| Commit | What it adds |
+| --- | --- |
+| `chore: initialize WordPress project` | Move the repo root from `wp-content/themes/project` to the WordPress web root so the plugin can also be tracked. Add root `.gitignore` and `.gitattributes`. Backup of the old repo at `../.git-theme-backup`. |
+| `feat: scaffold programs-module plugin` | Plugin bootstrap, constants, text domain, activation/deactivation hooks, `@wordpress/scripts` package.json. |
+| `feat: register program CPT and program-type taxonomy` | The `program` post type with rewrite slug `programmes` and archive `/programmes`. Hierarchical `program-type` taxonomy with rewrite base `programmes/type` so term archives and single programs cannot collide. Both over REST. |
+| `feat: seed undergraduate and postgraduate program types` | Idempotent `seed_terms()`. |
+| `feat: seed 10 sample programs with generated featured images and meta` | Ten programs, GD-generated 1200x800 PNGs, alt text set. Admin re-seed/remove buttons (nonce + capability). WP-CLI: `wp programs seed|remove|count`. |
+
+## How to test
+1. Switch to this branch:
+   ```bash
+   git fetch
+   git checkout feature/cpt-setup
+   ```
+2. Ensure the site is running (Local by Flywheel in this repo). Activate
+   the plugin in **Plugins -> Installed Plugins**.
+3. After activation the terms `Undergraduate` and `Postgraduate` exist
+   under **Programs -> Program Types**, and **Programs -> All Programs**
+   shows ten programmes.
+4. From the program list and the Plugins screens, the **Programs sample
+   data** notice exposes **Re-seed sample programs** and
+   **Remove sample programs** actions. Both require the `manage_options`
+   capability and a nonce.
+5. From the command line:
+   ```bash
+   wp programs count
+   wp programs seed --force    # idempotent rebuild
+   wp programs remove           # remove only the seeded sample data
+   ```
+6. Confirm permalinks (Settings -> Permalinks must be set to anything
+   other than `Plain` for pretty links to take effect):
+   - `/programmes/` - archive
+   - `/programmes/computer-science-bsc/` - single program
+   - `/programmes/type/undergraduate/` - taxonomy archive (Task 4 will
+     add `/programmes/undergraduate` directly)
+
+## What I actually observed when testing locally
+- 10 programs created across two terms (5 each).
+- All 10 programs carry a 1200x800 featured image, three content
+  sections, an academic year and a duration.
+- Alt text on the featured image is set to the program title (used by
+  the reusable card in Task 5).
+- Second run of `seed_programs` reports 0 new programs (idempotency
+  holds); `--force` rebuilds them and regenerates images.
+- Twenty-three rewrite rules mention `programmes`, including
+  `programmes/?$` (archive) and `programmes/([^/]+)(?:/([0-9]+))?/?$`
+  (single program pagination).
+
+## Decisions and assumptions worth flagging
+- **Plugin over theme.** The TASK-UNDERSTANDING.md doc chose the plugin
+  for the content model and the theme for presentation. The repo was
+  re-rooted to `app/public` so both can be tracked together.
+- **Non-colliding rewrite bases.** The taxonomy rewrite base is
+  `/programmes/type` rather than `/programmes`. Task 4 adds explicit
+  rules for `/programmes/undergraduate` and `/programmes/postgraduate`,
+  so the canonical term archive can never collide with single programs.
+- **Meta keys defined on `Programs_CPT`.** Used so the React panel in
+  Task 3 and the seeder share key names without a second constant class.
+- **GD-generated images.** The local PHP runtime has GD enabled. If GD
+  is missing the program is still created, but the featured image
+  becomes an empty attachment slot and an admin warning is logged. The
+  README documents this.
+- **Web root hosts `.git`.** Local's nginx does not deny dotfiles, so
+  the README will include an `nginx` `deny all` snippet for the `.git`
+  directory. For a public deliverable the repo will live on
+  github.com/kunal-upveja/.
+- **.gitignore excludes `wp-content/uploads/`.** Sample images live
+  there and are regenerated by the seeder rather than committed.
+
+## Known limitations / things this PR deliberately does not cover
+- Task 3 (React admin UI for the meta fields) - next PR.
+- Task 4 (custom rewrite rules for `/programmes/undergraduate` and
+  `/programmes/postgraduate`) - next PR.
+- Tasks 5-8 (card, detail page, Interactivity API filter, click
+  tracking) - follow-up PRs.
+- No build artefacts yet (`build/` will be created in Task 3 once
+  `@wordpress/scripts` is installed).
+
+## Plan vs Actual (running note)
+The plan in TASK-UNDERSTANDING.md called for four feature branches
+(`feature/cpt-setup`, `feature/admin-ui`, `feature/frontend`,
+`feature/tracking`). This PR covers the first one. Time on Task 2 was
+spent roughly as estimated (CPT + taxonomy + terms + ten programs).
+One unplanned detour was re-rooting the git repo, which was necessary
+so the plugin could be tracked alongside the theme.
+
+## Push and open PR
+A GitHub CLI is not installed on this machine, so add the remote and push
+yourself once you have the public repo URL:
+```bash
+git remote add origin <repo-url>
+git push -u origin feature/cpt-setup
+```
+The PR description above can be pasted straight into the GitHub PR UI.
+After merge into `dev`, repeat for `dev -> uat` and `uat -> main` per
+the required Git workflow.
