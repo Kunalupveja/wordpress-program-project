@@ -73,23 +73,60 @@ class Programs_Enquiry {
 	 * @var array<string, int>
 	 */
 	const MAX_LENGTHS = array(
-		'name'        => 100,
-		'email'       => 190,
-		'phone'       => 40,
-		'message'     => 2000,
-		'program'     => 200,
-		'countryCode' => 8,
+		'enquirer'  => 100,
+		'level'     => 100,
+		'firstName' => 100,
+		'lastName'  => 100,
+		'country'   => 100,
+		'city'      => 100,
+		'email'     => 190,
+		'phone'     => 40,
 	);
 
 	/**
-	 * Accepted country dialling codes.
+	 * Accepted enquirer types.
 	 *
-	 * Anything not on the list is dropped, so the field cannot be used to
+	 * Anything not on the list is rejected, so the field cannot be used to
 	 * smuggle arbitrary content into the lead file.
 	 *
-	 * @var string[]
+	 * @var array<string, string>
 	 */
-	const DIAL_CODES = array( '+971', '+44', '+91', '+92', '+20', '+966', '+63', '+1' );
+	const ENQUIRER_TYPES = array(
+		'prospective-student' => 'Prospective student',
+		'parent'              => 'Parent or guardian',
+		'counsellor'          => 'School counsellor',
+		'agent'               => 'Agent',
+	);
+
+	/**
+	 * Accepted countries.
+	 *
+	 * @var array<string, string>
+	 */
+	const COUNTRIES = array(
+		'india'      => 'India',
+		'bangladesh' => 'Bangladesh',
+		'nepal'      => 'Nepal',
+		'sri-lanka'  => 'Sri Lanka',
+		'uae'        => 'United Arab Emirates',
+		'other'      => 'Other',
+	);
+
+	/**
+	 * Accepted cities.
+	 *
+	 * @var array<string, string>
+	 */
+	const CITIES = array(
+		'mumbai'    => 'Mumbai',
+		'delhi'     => 'Delhi',
+		'bengaluru' => 'Bengaluru',
+		'chennai'   => 'Chennai',
+		'hyderabad' => 'Hyderabad',
+		'pune'      => 'Pune',
+		'kolkata'   => 'Kolkata',
+		'other'     => 'Other',
+	);
 
 	/**
 	 * Registers the hooks for this class.
@@ -106,17 +143,14 @@ class Programs_Enquiry {
 	/**
 	 * Enqueues the enquiry pop-up module.
 	 *
-	 * The endpoint and nonce travel as data attributes on the form rather
-	 * than as an inline script, so there is nothing to keep in sync and no
-	 * extra global.
+	 * Loaded on every page because the header "Apply Now" CTA opens the
+	 * pop-up anywhere on the site. The endpoint and nonce travel as data
+	 * attributes on the form rather than as an inline script, so there is
+	 * nothing to keep in sync and no extra global.
 	 *
 	 * @return void
 	 */
 	public function enqueue_assets() {
-		if ( ! is_singular( Programs_CPT::POST_TYPE ) && ! is_post_type_archive( Programs_CPT::POST_TYPE ) && ! is_tax( Programs_CPT::TAXONOMY ) ) {
-			return;
-		}
-
 		$module = PROGRAMS_MODULE_DIR . 'build/frontend/enquiry.js';
 
 		if ( ! file_exists( $module ) ) {
@@ -223,18 +257,16 @@ class Programs_Enquiry {
 			);
 		}
 
-		$name    = $this->read_field( $params, 'name' );
-		$email   = $this->read_field( $params, 'email' );
-		$phone   = $this->read_field( $params, 'phone' );
-		$message = $this->read_field( $params, 'message' );
-		$program = $this->read_field( $params, 'program' );
+		$enquirer  = $this->read_field( $params, 'enquirer' );
+		$level     = $this->read_field( $params, 'level' );
+		$first     = $this->read_field( $params, 'firstName' );
+		$last      = $this->read_field( $params, 'lastName' );
+		$country   = $this->read_field( $params, 'country' );
+		$city      = $this->read_field( $params, 'city' );
+		$email     = $this->read_field( $params, 'email' );
+		$phone     = $this->read_field( $params, 'phone' );
 
-		$program_id    = isset( $params['programId'] ) ? absint( $params['programId'] ) : 0;
-		$country_code  = $this->read_field( $params, 'countryCode' );
-
-		if ( '' !== $country_code && ! in_array( $country_code, self::DIAL_CODES, true ) ) {
-			$country_code = '';
-		}
+		$program_id = isset( $params['programId'] ) ? absint( $params['programId'] ) : 0;
 
 		$errors = array();
 
@@ -244,8 +276,28 @@ class Programs_Enquiry {
 			$errors['programme'] = __( 'Please choose a programme.', 'programs-module' );
 		}
 
-		if ( '' === $name ) {
-			$errors['name'] = __( 'Please enter your name.', 'programs-module' );
+		if ( '' === $enquirer || ! isset( self::ENQUIRER_TYPES[ $enquirer ] ) ) {
+			$errors['enquirer'] = __( 'Please tell us who is enquiring.', 'programs-module' );
+		}
+
+		if ( '' === $level || ! in_array( $level, Programs_CPT::DEFAULT_TERMS, true ) ) {
+			$errors['level'] = __( 'Please choose a level of interest.', 'programs-module' );
+		}
+
+		if ( '' === $first ) {
+			$errors['firstName'] = __( 'Please enter your first name.', 'programs-module' );
+		}
+
+		if ( '' === $last ) {
+			$errors['lastName'] = __( 'Please enter your last name.', 'programs-module' );
+		}
+
+		if ( '' === $country || ! isset( self::COUNTRIES[ $country ] ) ) {
+			$errors['country'] = __( 'Please choose your country.', 'programs-module' );
+		}
+
+		if ( '' === $city || ! isset( self::CITIES[ $city ] ) ) {
+			$errors['city'] = __( 'Please choose your city.', 'programs-module' );
 		}
 
 		if ( '' === $email ) {
@@ -254,8 +306,10 @@ class Programs_Enquiry {
 			$errors['email'] = __( 'Please enter a valid email address.', 'programs-module' );
 		}
 
-		if ( '' !== $phone && ! preg_match( '/^[0-9+()\s.-]{6,40}$/', $phone ) ) {
-			$errors['phone'] = __( 'Please enter a valid phone number.', 'programs-module' );
+		if ( '' === $phone ) {
+			$errors['phone'] = __( 'Please enter your phone number.', 'programs-module' );
+		} elseif ( ! preg_match( '/^[0-9]{10}$/', $phone ) ) {
+			$errors['phone'] = __( 'Please enter a valid 10-digit phone number.', 'programs-module' );
 		}
 
 		if ( ! empty( $errors ) ) {
@@ -269,14 +323,20 @@ class Programs_Enquiry {
 			);
 		}
 
+		$program = get_the_title( $program_id );
+		$name    = trim( $first . ' ' . $last );
+
 		$entry = array(
 			'timestamp'     => gmdate( 'c' ),
 			'program_id'    => $program_id,
 			'program_title' => $program,
+			'enquirer'      => self::ENQUIRER_TYPES[ $enquirer ],
+			'level'         => 'undergraduate' === $level ? 'Undergraduate' : 'Postgraduate',
 			'name'          => $name,
 			'email'         => $email,
-			'phone'         => '' === $phone ? '' : trim( $country_code . ' ' . $phone ),
-			'message'       => $message,
+			'phone'         => '+91 ' . $phone,
+			'country'       => self::COUNTRIES[ $country ],
+			'city'          => self::CITIES[ $city ],
 		);
 
 		/**

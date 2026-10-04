@@ -202,8 +202,9 @@ class Programs_Routing {
 	 *
 	 * Never hardcoded: a host can point the whole site at a different apply
 	 * flow with one filter. The default resolves the page whose slug is
-	 * `apply` when it exists, so nothing 404s on a stock install once that
-	 * page has been added.
+	 * `apply` when it exists. When it does not, the Apply action opens the
+	 * enquiry pop-up instead of linking to a page that would 404 — the
+	 * pop-up carries the same "Register your interest" form as the design.
 	 *
 	 * @param int $post_id Optional program ID.
 	 * @return string
@@ -218,7 +219,7 @@ class Programs_Routing {
 		}
 
 		if ( ! $url ) {
-			$url = home_url( '/apply/' );
+			$url = '#programmes-enquiry';
 		}
 
 		/**
