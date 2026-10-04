@@ -135,16 +135,32 @@ function project_widgets_init() {
 add_action( 'widgets_init', 'project_widgets_init' );
 
 /**
- * Renders the site logo, falling back to a wordmark.
+ * Renders the site logo, falling back to the bundled brand mark, then a
+ * wordmark.
  *
- * The customiser logo wins when one has been set; otherwise a wordmark built
- * from the site name keeps the header and footer from looking unfinished.
+ * Priority: the customiser logo, the theme's own assets/images/logo.png
+ * (the same brand mark the reference build ships), and finally a wordmark
+ * built from the site name so the header never looks unfinished.
  *
  * @return void
  */
 function project_site_logo() {
 	if ( has_custom_logo() ) {
 		the_custom_logo();
+		return;
+	}
+
+	$bundled = get_template_directory() . '/assets/images/logo.png';
+
+	if ( file_exists( $bundled ) ) {
+		?>
+		<a class="site-logo" href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home">
+			<img class="site-logo__image"
+				src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/logo.png' ); ?>"
+				alt="<?php echo esc_attr( get_bloginfo( 'name' ) . ' Mumbai' ); ?>"
+				width="180" height="63" />
+		</a>
+		<?php
 		return;
 	}
 
