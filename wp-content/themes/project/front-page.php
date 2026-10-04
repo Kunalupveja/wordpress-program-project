@@ -1,14 +1,11 @@
 <?php
 /**
- * The front page: the "Home" screen from the Figma file.
+ * The front page - Aberdeen Mumbai Homepage
  *
- * Flow: hero (cityscape) -> Courses and Qualifications -> Our Programmes
- * (one card per program type) -> footer.
- *
- * Images are pulled from the programmes themselves, so the page is never
- * empty and never ships a stock asset.
- *
- * @link https://developer.wordpress.org/themes/basics/template-hierarchy/
+ * Matches the index.html design:
+ * - Hero slider with Mumbai skyline
+ * - Careers and Employability section
+ * - Our Programmes (Undergraduate and Postgraduate cards)
  *
  * @package PROJECT
  */
@@ -18,25 +15,9 @@ get_header();
 $has_module = project_has_programs_module();
 $terms      = $has_module ? Programs_CPT::get_program_types( true ) : array();
 
-$intro_post = null;
+// Get featured programmes for cards
 $type_posts = array();
-
 if ( $has_module ) {
-	$intro_query = new WP_Query(
-		array(
-			'post_type'           => Programs_CPT::POST_TYPE,
-			'post_status'         => 'publish',
-			'posts_per_page'      => 1,
-			'no_found_rows'       => true,
-			'ignore_sticky_posts' => true,
-		)
-	);
-
-	if ( $intro_query->have_posts() ) {
-		$intro_post = $intro_query->posts[0];
-	}
-
-	// One representative image per program type for the Our Programmes cards.
 	foreach ( $terms as $home_term ) {
 		$type_query = new WP_Query(
 			array(
@@ -62,144 +43,174 @@ if ( $has_module ) {
 }
 ?>
 
-	<main id="primary" class="site-main">
+<!-- HERO SLIDER -->
+<section class="hero">
+	<img
+		class="hero-img"
+		src="https://images.unsplash.com/photo-1567157577867-05ccb1388e66?w=1800&q=80"
+		alt="Mumbai skyline"
+	>
+	<button class="slider-arrow left" aria-label="Previous slide">
+		<svg class="icon" viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+	</button>
+	<button class="slider-arrow right" aria-label="Next slide">
+		<svg class="icon" viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+	</button>
+	<div class="hero-overlay">
+		<h1 class="hero-title">Join the University of Aberdeen in India</h1>
+		<p class="hero-sub">
+			Global challenges are waiting for new ways of thinking. Discover your true north and start creating a more inclusive and sustainable world
+		</p>
+		<div class="hero-dots">
+			<div class="dot active"></div>
+			<div class="dot"></div>
+			<div class="dot"></div>
+		</div>
+	</div>
+</section>
 
-		<section class="home-hero">
-			<?php // Decorative skyline: the city the campus sits in. ?>
-			<svg class="home-hero__skyline" viewBox="0 0 1200 240" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-				<g fill="#0c2340">
-					<rect x="40" y="120" width="70" height="120" />
-					<rect x="125" y="70" width="58" height="170" />
-					<rect x="196" y="140" width="46" height="100" />
-					<rect x="255" y="40" width="64" height="200" />
-					<rect x="332" y="110" width="52" height="130" />
-					<rect x="398" y="160" width="74" height="80" />
-					<rect x="486" y="20" width="56" height="220" />
-					<rect x="556" y="100" width="60" height="140" />
-					<rect x="630" y="150" width="48" height="90" />
-					<rect x="692" y="60" width="68" height="180" />
-					<rect x="774" y="130" width="54" height="110" />
-					<rect x="842" y="90" width="62" height="150" />
-					<rect x="918" y="155" width="44" height="85" />
-					<rect x="976" y="50" width="70" height="190" />
-					<rect x="1060" y="120" width="58" height="120" />
-				</g>
-				<g fill="#f4b942" opacity="0.5">
-					<rect x="60" y="140" width="8" height="10" /><rect x="80" y="140" width="8" height="10" />
-					<rect x="140" y="90" width="8" height="10" /><rect x="160" y="90" width="8" height="10" />
-					<rect x="270" y="60" width="8" height="10" /><rect x="295" y="60" width="8" height="10" />
-					<rect x="500" y="45" width="8" height="10" /><rect x="520" y="45" width="8" height="10" />
-					<rect x="710" y="80" width="8" height="10" /><rect x="735" y="80" width="8" height="10" />
-					<rect x="990" y="70" width="8" height="10" /><rect x="1015" y="70" width="8" height="10" />
-				</g>
-			</svg>
-
-			<div class="home-hero__inner">
-				<p class="home-hero__eyebrow"><?php esc_html_e( 'University of Sunderland', 'project' ); ?></p>
-				<h1 class="home-hero__title"><?php esc_html_e( 'Join the University of Sunderland in Dubai', 'project' ); ?></h1>
-				<p class="home-hero__text">
-					<?php esc_html_e( 'Study a British degree in one of the world’s most connected cities. Choose from undergraduate and postgraduate programmes built around the industries that hire here.', 'project' ); ?>
+<!-- CAREERS & EMPLOYABILITY -->
+<section class="careers">
+	<div class="section-inner">
+		<div class="section-heading-wrap">
+			<h2 class="section-heading">Careers and Employability</h2>
+			<div class="motif"></div>
+		</div>
+		<div class="careers-body">
+			<div class="careers-image">
+				<img
+					src="https://images.unsplash.com/photo-1730173737002-67e5b10d1182?fit=crop&w=1080&q=80"
+					alt="Students on campus"
+				>
+			</div>
+			<div class="careers-text">
+				<p>
+					The University of Aberdeen has been educating students for over 525 years, with a reputation for excellence in teaching and research. Our Mumbai campus brings this legacy to India, offering world-class education with strong industry connections.
+					<br><br>
+					Our Career Services team works closely with students and graduates to help them achieve their career goals through workshops, internships, and employer connections. We have partnerships with leading companies across various sectors.
 				</p>
-				<div class="home-hero__actions">
-					<?php if ( $has_module ) : ?>
-						<a class="pm-button pm-button--primary" href="<?php echo esc_url( Programs_Routing::get_archive_url() ); ?>">
-							<?php esc_html_e( 'Explore programmes', 'project' ); ?>
-						</a>
-					<?php endif; ?>
-					<a class="pm-button pm-button--secondary" href="#courses-and-qualifications">
-						<?php esc_html_e( 'Courses and qualifications', 'project' ); ?>
-					</a>
+				<div>
+					<a href="<?php echo esc_url( home_url( '/careers' ) ); ?>" class="btn-see-more">See More</a>
 				</div>
 			</div>
-		</section>
+		</div>
+	</div>
+</section>
 
-		<section class="home-intro" id="courses-and-qualifications" aria-labelledby="courses-and-qualifications-title">
-			<div class="home-intro__media">
+<!-- OUR PROGRAMMES -->
+<section class="programmes">
+	<div class="programmes-heading-wrap">
+		<h2 class="programmes-heading">Our Programmes</h2>
+		<div class="motif-centered"></div>
+	</div>
+	<div class="programmes-grid">
+
+		<?php if ( $has_module && ! empty( $terms ) ) : ?>
+			<?php foreach ( $terms as $programme_term ) : ?>
 				<?php
-				if ( $intro_post && has_post_thumbnail( $intro_post->ID ) ) {
-					echo wp_get_attachment_image(
-						get_post_thumbnail_id( $intro_post->ID ),
-						'large',
-						false,
-						array(
-							'alt'     => '',
-							'loading' => 'eager',
-						)
-					);
+				$term_slug = $programme_term->slug;
+				$term_post = isset( $type_posts[ $term_slug ] ) ? $type_posts[ $term_slug ] : null;
+				$term_url  = Programs_Routing::get_archive_url( $term_slug );
+				
+				// Get image from featured programme or use placeholder
+				$image_url = 'https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=700&q=80';
+				if ( $term_post && has_post_thumbnail( $term_post->ID ) ) {
+					$image_url = get_the_post_thumbnail_url( $term_post->ID, 'large' );
+				} elseif ( 'postgraduate' === $term_slug ) {
+					$image_url = 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=700&q=80';
 				}
 				?>
-			</div>
 
-			<div class="home-intro__text-block">
-				<p class="home-intro__eyebrow"><?php esc_html_e( 'Study with us', 'project' ); ?></p>
-				<h2 class="home-intro__title" id="courses-and-qualifications-title">
-					<?php esc_html_e( 'Courses and Qualifications', 'project' ); ?>
-				</h2>
-				<p class="home-intro__text">
-					<?php esc_html_e( 'Every programme is taught to the same academic standard as our UK campus and validated by the University of Sunderland. You study in small groups, with lecturers who still work in the industries they teach, and you graduate with a degree recognised across the Gulf and beyond.', 'project' ); ?>
-				</p>
-				<?php if ( $has_module ) : ?>
-					<a class="pm-button pm-button--primary" href="<?php echo esc_url( Programs_Routing::get_archive_url() ); ?>">
-						<?php esc_html_e( 'Browse all courses', 'project' ); ?>
-					</a>
-				<?php endif; ?>
-			</div>
-		</section>
-
-		<?php if ( ! empty( $terms ) ) : ?>
-			<section class="home-programmes" aria-labelledby="our-programmes-title">
-				<div class="home-programmes__inner">
-					<div class="home-section__head">
-						<h2 class="home-section__title" id="our-programmes-title">
-							<?php esc_html_e( 'Our Programmes', 'project' ); ?>
-						</h2>
-						<a class="home-section__link" href="<?php echo esc_url( Programs_Routing::get_archive_url() ); ?>">
-							<?php esc_html_e( 'View all programmes', 'project' ); ?>
-						</a>
+				<!-- <?php echo esc_html( $programme_term->name ); ?> -->
+				<div class="prog-card">
+					<div class="prog-card-image">
+						<img
+							src="<?php echo esc_url( $image_url ); ?>"
+							alt="<?php echo esc_attr( $programme_term->name ); ?> Programmes"
+						>
 					</div>
-
-					<ul class="home-types">
-						<?php foreach ( $terms as $home_term ) : ?>
+					<div class="prog-card-body">
+						<div class="prog-card-heading-wrap">
+							<h3 class="prog-card-heading"><?php echo esc_html( $programme_term->name ); ?> Programmes</h3>
+							<div class="motif-gold"></div>
+						</div>
+						<p class="prog-card-text">
 							<?php
-							$card_post = isset( $type_posts[ $home_term->slug ] ) ? $type_posts[ $home_term->slug ] : null;
+							if ( $programme_term->description ) {
+								echo esc_html( $programme_term->description );
+							} else {
+								echo esc_html( sprintf(
+									'Explore our %s degree programmes designed to prepare you for success in your chosen field.',
+									strtolower( $programme_term->name )
+								) );
+							}
 							?>
-							<li class="home-type">
-								<?php if ( $card_post && has_post_thumbnail( $card_post->ID ) ) : ?>
-									<div class="home-type__media">
-										<?php
-										echo wp_get_attachment_image(
-											get_post_thumbnail_id( $card_post->ID ),
-											'program-card',
-											false,
-											array(
-												'alt'     => '',
-												'loading' => 'lazy',
-											)
-										);
-										?>
-									</div>
-								<?php endif; ?>
-
-								<div class="home-type__body">
-									<h3 class="home-type__title"><?php echo esc_html( $home_term->name ); ?></h3>
-									<p class="home-type__text"><?php echo esc_html( $home_term->description ); ?></p>
-									<a class="home-type__link"
-										href="<?php echo esc_url( Programs_Routing::get_archive_url( $home_term->slug ) ); ?>"
-										data-track="<?php echo esc_attr( program_track_attr( 'link', 'home-type-' . $home_term->slug, 'home-types', 'componentLink' ) ); ?>">
-										<?php
-										/* translators: %s: program type name, e.g. Undergraduate. */
-										printf( esc_html__( 'View %s programmes', 'project' ), esc_html( $home_term->name ) );
-										?>
-									</a>
-								</div>
-							</li>
-						<?php endforeach; ?>
-					</ul>
+						</p>
+						<div class="prog-card-footer">
+							<a href="<?php echo esc_url( $term_url ); ?>" style="color:inherit;text-decoration:none">
+								<span>See More</span>
+							</a>
+							<svg class="icon" viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
+						</div>
+					</div>
 				</div>
-			</section>
+
+			<?php endforeach; ?>
+		<?php else : ?>
+			
+			<!-- Fallback: Default cards if no programmes exist -->
+			<div class="prog-card">
+				<div class="prog-card-image">
+					<img
+						src="https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=700&q=80"
+						alt="Undergraduate Programmes"
+					>
+				</div>
+				<div class="prog-card-body">
+					<div class="prog-card-heading-wrap">
+						<h3 class="prog-card-heading">Undergraduate Programmes</h3>
+						<div class="motif-gold"></div>
+					</div>
+					<p class="prog-card-text">
+						Explore our undergraduate degree programmes designed to prepare you for success in your chosen field.
+					</p>
+					<div class="prog-card-footer">
+						<a href="<?php echo esc_url( home_url( '/programmes/undergraduate' ) ); ?>" style="color:inherit;text-decoration:none">
+							<span>See More</span>
+						</a>
+						<svg class="icon" viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
+					</div>
+				</div>
+			</div>
+
+			<div class="prog-card">
+				<div class="prog-card-image">
+					<img
+						src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=700&q=80"
+						alt="Postgraduate Programmes"
+					>
+				</div>
+				<div class="prog-card-body">
+					<div class="prog-card-heading-wrap">
+						<h3 class="prog-card-heading">Postgraduate Programmes</h3>
+						<div class="motif-gold"></div>
+					</div>
+					<p class="prog-card-text">
+						Advance your career with our postgraduate programmes taught by industry experts and leading academics.
+					</p>
+					<div class="prog-card-footer">
+						<a href="<?php echo esc_url( home_url( '/programmes/postgraduate' ) ); ?>" style="color:inherit;text-decoration:none">
+							<span>See More</span>
+						</a>
+						<svg class="icon" viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
+					</div>
+				</div>
+			</div>
+
 		<?php endif; ?>
 
-	</main><!-- #main -->
+	</div>
+</section>
 
 <?php
 get_footer();
