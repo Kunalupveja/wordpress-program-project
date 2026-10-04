@@ -90,7 +90,8 @@ if ( $has_module ) {
 					Our Career Services team works closely with students and graduates to help them achieve their career goals through workshops, internships, and employer connections. We have partnerships with leading companies across various sectors.
 				</p>
 				<div>
-					<a href="<?php echo esc_url( home_url( '/careers' ) ); ?>" class="btn-see-more">See More</a>
+					<a href="<?php echo esc_url( home_url( '/careers' ) ); ?>" class="btn-see-more"
+						<?php echo function_exists( 'program_track_attr' ) ? 'data-track="' . program_track_attr( 'link', 'see-more-careers', 'homepage', 'componentLink' ) . '"' : ''; ?>>See More</a>
 				</div>
 			</div>
 		</div>
@@ -147,7 +148,8 @@ if ( $has_module ) {
 							?>
 						</p>
 						<div class="prog-card-footer">
-							<a href="<?php echo esc_url( $term_url ); ?>" style="color:inherit;text-decoration:none">
+							<a href="<?php echo esc_url( $term_url ); ?>" style="color:inherit;text-decoration:none"
+								<?php echo function_exists( 'program_track_attr' ) ? 'data-track="' . program_track_attr( 'link', 'see-more-' . $term_slug, 'homepage', 'componentLink' ) . '"' : ''; ?>>
 								<span>See More</span>
 							</a>
 							<svg class="icon" viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
@@ -175,7 +177,8 @@ if ( $has_module ) {
 						Explore our undergraduate degree programmes designed to prepare you for success in your chosen field.
 					</p>
 					<div class="prog-card-footer">
-						<a href="<?php echo esc_url( home_url( '/programmes/undergraduate' ) ); ?>" style="color:inherit;text-decoration:none">
+						<a href="<?php echo esc_url( home_url( '/programmes/undergraduate' ) ); ?>" style="color:inherit;text-decoration:none"
+							<?php echo function_exists( 'program_track_attr' ) ? 'data-track="' . program_track_attr( 'link', 'see-more-undergraduate', 'homepage', 'componentLink' ) . '"' : ''; ?>>
 							<span>See More</span>
 						</a>
 						<svg class="icon" viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
@@ -199,7 +202,8 @@ if ( $has_module ) {
 						Advance your career with our postgraduate programmes taught by industry experts and leading academics.
 					</p>
 					<div class="prog-card-footer">
-						<a href="<?php echo esc_url( home_url( '/programmes/postgraduate' ) ); ?>" style="color:inherit;text-decoration:none">
+						<a href="<?php echo esc_url( home_url( '/programmes/postgraduate' ) ); ?>" style="color:inherit;text-decoration:none"
+							<?php echo function_exists( 'program_track_attr' ) ? 'data-track="' . program_track_attr( 'link', 'see-more-postgraduate', 'homepage', 'componentLink' ) . '"' : ''; ?>>
 							<span>See More</span>
 						</a>
 						<svg class="icon" viewBox="0 0 24 24" width="1em" height="1em" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
