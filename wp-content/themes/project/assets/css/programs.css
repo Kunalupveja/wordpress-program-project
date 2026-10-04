@@ -214,6 +214,12 @@
 	transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
+/* display: flex above must not override the hidden binding, or cards filtered
+ * out would stay on screen. */
+.program-card[hidden] {
+	display: none;
+}
+
 .program-card:hover {
 	transform: translateY(-4px);
 	box-shadow: 0 16px 32px rgba(8, 43, 64, 0.22);
@@ -364,6 +370,12 @@
 	display: inline-flex;
 	align-items: center;
 	gap: 8px;
+}
+
+/* display above must not override the hidden binding, or the spinner would
+ * show even when the filter is not loading. */
+.programmes__loading[hidden] {
+	display: none;
 }
 
 .programmes__loading::before {
@@ -595,6 +607,15 @@
 	background: rgba(113, 113, 113, 0.9);
 }
 
+/*
+ * display: flex above would otherwise override the hidden attribute's UA
+ * display: none, so the pop-up would render on every page load and could
+ * never be closed. This rule restores it at a higher specificity.
+ */
+.enquiry[hidden] {
+	display: none;
+}
+
 .enquiry__overlay {
 	position: absolute;
 	inset: 0;
@@ -805,6 +826,12 @@
 	margin-top: 6px;
 	font-size: 0.8125rem;
 	color: #af4448;
+}
+
+/* display: block above must not override the hidden binding, or every field
+ * would show an empty error gap before any validation has run. */
+.enquiry__error[hidden] {
+	display: none;
 }
 
 .enquiry__form-error {
