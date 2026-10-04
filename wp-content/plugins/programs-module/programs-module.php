@@ -33,6 +33,10 @@ define( 'PROGRAMS_MODULE_URL', plugin_dir_url( __FILE__ ) );
 
 require_once PROGRAMS_MODULE_DIR . 'includes/class-programs-cpt.php';
 require_once PROGRAMS_MODULE_DIR . 'includes/class-programs-seeder.php';
+require_once PROGRAMS_MODULE_DIR . 'includes/class-programs-meta.php';
+require_once PROGRAMS_MODULE_DIR . 'includes/class-programs-routing.php';
+require_once PROGRAMS_MODULE_DIR . 'includes/class-programs-tracking.php';
+require_once PROGRAMS_MODULE_DIR . 'includes/class-programs-enquiry.php';
 
 /**
  * Boots the plugin components.
@@ -48,6 +52,18 @@ function programs_module_bootstrap() {
 
 	$programs_seeder = new Programs_Seeder();
 	$programs_seeder->register_hooks();
+
+	$programs_meta = new Programs_Meta();
+	$programs_meta->register_hooks();
+
+	$programs_routing = new Programs_Routing();
+	$programs_routing->register_hooks();
+
+	$programs_tracking = new Programs_Tracking();
+	$programs_tracking->register_hooks();
+
+	$programs_enquiry = new Programs_Enquiry();
+	$programs_enquiry->register_hooks();
 }
 add_action( 'plugins_loaded', 'programs_module_bootstrap' );
 
@@ -84,6 +100,16 @@ function programs_module_activate() {
 
 	// The taxonomy has to exist before terms can be assigned to it.
 	Programs_Seeder::seed_all();
+
+	// The pretty /programmes/undergraduate style rules are added on init,
+	// which has already run at this point, so add them here too or the
+	// flush below would write a rule set without them.
+	$programs_routing = new Programs_Routing();
+	$programs_routing->add_rewrite_rules();
+
+	// Make sure the tracking log directory exists and is protected from the
+	// moment the plugin goes live, not on the first tracked click.
+	Programs_Tracking::get_log_dir();
 
 	update_option( 'programs_module_version', PROGRAMS_MODULE_VERSION );
 

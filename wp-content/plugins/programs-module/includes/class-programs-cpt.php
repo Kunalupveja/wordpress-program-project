@@ -44,12 +44,16 @@ class Programs_CPT {
 	/**
 	 * Public base for the taxonomy.
 	 *
-	 * Deliberately namespaced under /programmes/type rather than sharing
-	 * REWRITE_SLUG. If the taxonomy also claimed /programmes/{slug} it would
-	 * race with single programs, and whichever rule was registered first
-	 * would win. Task 4 adds explicit rules for /programmes/undergraduate
-	 * and /programmes/postgraduate, so the canonical term archive keeps its
-	 * own base and the two structures can never collide.
+	 * The taxonomy registers no permastruct of its own (see
+	 * register_taxonomy(): `rewrite` is false). Task 4 adds explicit rules
+	 * for /programmes/undergraduate and /programmes/postgraduate at the top
+	 * of the stack, and Programs_Routing points term links at them.
+	 *
+	 * Giving the taxonomy its own base as well was tried and removed: a
+	 * /programmes/type/{slug} rule loses to the attachment rule that the
+	 * post type generates, so that URL resolved to an attachment instead of
+	 * to a term. One canonical URL per program type is both simpler and
+	 * safer than two where one is broken.
 	 *
 	 * @var string
 	 */
@@ -214,11 +218,11 @@ class Programs_CPT {
 			'hierarchical'      => true,
 			'query_var'         => true,
 			'sort'              => false,
-			'rewrite'           => array(
-				'slug'         => self::TAXONOMY_REWRITE_SLUG,
-				'with_front'   => false,
-				'hierarchical' => false,
-			),
+			// No permastruct of its own: /programmes/undergraduate and
+			// /programmes/postgraduate come from Programs_Routing, which
+			// also rewrites term links to point at them. Registering a base
+			// here as well would create a second, shadowed URL per term.
+			'rewrite'           => false,
 		);
 
 		register_taxonomy( self::TAXONOMY, array( self::POST_TYPE ), $args );
