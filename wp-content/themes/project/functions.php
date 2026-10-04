@@ -164,8 +164,17 @@ function project_site_logo() {
  * Enqueue scripts and styles.
  */
 function project_scripts() {
+	// Base theme stylesheet
 	wp_enqueue_style( 'project-style', get_stylesheet_uri(), array(), _S_VERSION );
 	wp_style_add_data( 'project-style', 'rtl', 'replace' );
+	
+	// Aberdeen Mumbai design system (from HTML/CSS build)
+	wp_enqueue_style( 'aberdeen-design', get_template_directory_uri() . '/assets/css/aberdeen-design.css', array(), _S_VERSION );
+	
+	// Programs module styles
+	if ( project_has_programs_module() ) {
+		wp_enqueue_style( 'programs-css', get_template_directory_uri() . '/assets/css/programs.css', array( 'aberdeen-design' ), _S_VERSION );
+	}
 
 	wp_enqueue_script( 'project-navigation', get_template_directory_uri() . '/js/navigation.js', array(), _S_VERSION, true );
 
