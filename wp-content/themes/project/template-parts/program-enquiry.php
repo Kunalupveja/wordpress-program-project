@@ -63,14 +63,14 @@ $cities = array(
 	hidden
 	data-wp-bind--hidden="!state.isOpen"
 	data-wp-on--keydown="actions.onKeydown"
-	data-wp-watch="effects.focusDialog"
-	data-wp-effect="effects.focusDialog">
+	data-wp-effect="effects.lockScroll">
 
 	<button class="enquiry__overlay" type="button"
 		data-wp-on--click="actions.close"
 		aria-label="<?php esc_attr_e( 'Close the enquiry form', 'project' ); ?>"></button>
 
-	<div class="enquiry__dialog" role="dialog" aria-modal="true" aria-labelledby="programmes-enquiry-title">
+	<div class="enquiry__dialog" role="dialog" aria-modal="true" aria-labelledby="programmes-enquiry-title"
+		data-wp-effect="effects.focusDialog">
 		<div class="enquiry__head">
 			<h2 class="enquiry__title" id="programmes-enquiry-title"><?php esc_html_e( 'Register your interest', 'project' ); ?></h2>
 			<button class="enquiry__close" type="button"
