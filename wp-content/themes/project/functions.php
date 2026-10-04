@@ -154,7 +154,7 @@ function project_site_logo() {
 		<span class="site-logo__mark" aria-hidden="true"><?php echo esc_html( mb_substr( $name, 0, 1 ) ); ?></span>
 		<span class="site-logo__text">
 			<span class="site-logo__name"><?php echo esc_html( $name ); ?></span>
-			<span class="site-logo__place"><?php esc_html_e( 'Dubai', 'project' ); ?></span>
+			<span class="site-logo__place"><?php esc_html_e( 'Mumbai', 'project' ); ?></span>
 		</span>
 	</a>
 	<?php
@@ -170,11 +170,13 @@ function project_scripts() {
 	
 	// Aberdeen Mumbai design system (from HTML/CSS build) - MAIN STYLES
 	wp_enqueue_style( 'aberdeen-design', get_template_directory_uri() . '/assets/css/aberdeen-design.css', array( 'project-style' ), _S_VERSION );
-	
-	// Programs module styles - DISABLED temporarily, using Aberdeen design instead
-	// if ( project_has_programs_module() ) {
-	// 	wp_enqueue_style( 'programs-css', get_template_directory_uri() . '/assets/css/programs.css', array( 'aberdeen-design' ), _S_VERSION );
-	// }
+
+	// Programs module styles: listing, filter bar, cards, single programme,
+	// enquiry popup and mobile sticky CTA. Shares the Aberdeen design tokens
+	// so it cannot drift from the base system.
+	if ( project_has_programs_module() ) {
+		wp_enqueue_style( 'programs-css', get_template_directory_uri() . '/assets/css/programs.css', array( 'aberdeen-design' ), _S_VERSION );
+	}
 
 	wp_enqueue_script( 'project-navigation', get_template_directory_uri() . '/js/navigation.js', array(), _S_VERSION, true );
 
