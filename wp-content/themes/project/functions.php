@@ -135,11 +135,46 @@ function project_widgets_init() {
 add_action( 'widgets_init', 'project_widgets_init' );
 
 /**
+ * Renders the site logo, falling back to a wordmark.
+ *
+ * The customiser logo wins when one has been set; otherwise a wordmark built
+ * from the site name keeps the header and footer from looking unfinished.
+ *
+ * @return void
+ */
+function project_site_logo() {
+	if ( has_custom_logo() ) {
+		the_custom_logo();
+		return;
+	}
+
+	$name = get_bloginfo( 'name' );
+	?>
+	<a class="site-logo" href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home">
+		<span class="site-logo__mark" aria-hidden="true"><?php echo esc_html( mb_substr( $name, 0, 1 ) ); ?></span>
+		<span class="site-logo__text">
+			<span class="site-logo__name"><?php echo esc_html( $name ); ?></span>
+			<span class="site-logo__place"><?php esc_html_e( 'Dubai', 'project' ); ?></span>
+		</span>
+	</a>
+	<?php
+}
+
+/**
  * Enqueue scripts and styles.
  */
 function project_scripts() {
+	// Base theme stylesheet
 	wp_enqueue_style( 'project-style', get_stylesheet_uri(), array(), _S_VERSION );
 	wp_style_add_data( 'project-style', 'rtl', 'replace' );
+	
+	// Aberdeen Mumbai design system (from HTML/CSS build)
+	wp_enqueue_style( 'aberdeen-design', get_template_directory_uri() . '/assets/css/aberdeen-design.css', array(), _S_VERSION );
+	
+	// Programs module styles
+	if ( project_has_programs_module() ) {
+		wp_enqueue_style( 'programs-css', get_template_directory_uri() . '/assets/css/programs.css', array( 'aberdeen-design' ), _S_VERSION );
+	}
 
 	wp_enqueue_script( 'project-navigation', get_template_directory_uri() . '/js/navigation.js', array(), _S_VERSION, true );
 
@@ -168,6 +203,14 @@ require get_template_directory() . '/inc/template-functions.php';
  * Customizer additions.
  */
 require get_template_directory() . '/inc/customizer.php';
+
+/**
+ * Programme presentation helpers.
+ *
+ * Loaded last so it can rely on the plugin's classes being registered
+ * (plugins load before themes).
+ */
+require get_template_directory() . '/inc/programs.php';
 
 /**
  * Load Jetpack compatibility file.
