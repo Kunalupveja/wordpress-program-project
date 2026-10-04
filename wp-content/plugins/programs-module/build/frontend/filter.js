@@ -75,6 +75,27 @@ const { state } = store( 'programs/filter', {
 
 			return context.value === state.filter ? 'page' : 'false';
 		},
+
+		/**
+		 * Whether a type group (heading + its cards) should be hidden.
+		 *
+		 * On /programmes the cards are grouped under Undergraduate /
+		 * Postgraduate headings. Choosing a filter hides the whole group
+		 * rather than only its cards.
+		 *
+		 * @return {boolean} True when the group is filtered out.
+		 */
+		get groupHidden() {
+			if ( 'all' === state.filter ) {
+				return false;
+			}
+
+			const context = getContext();
+
+			// A REST result may still be on its way; the context type keeps
+			// the heading in step with its own cards either way.
+			return context.type !== state.filter;
+		},
 	},
 
 	actions: {

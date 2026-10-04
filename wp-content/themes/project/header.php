@@ -69,6 +69,16 @@
 				);
 				?>
 			</nav>
-			<a href="<?php echo esc_url( home_url( '/apply' ) ); ?>" class="btn-apply">Apply Now</a>
+			<?php
+			$track_apply = function_exists( 'program_track_attr' )
+				? program_track_attr( 'link', 'apply-now', 'site-header', 'componentLink' )
+				: '';
+			?>
+			<a href="#programmes-enquiry"
+				class="btn-apply"
+				<?php echo project_has_programs_module() ? 'data-wp-interactive="programs/enquiry" data-wp-on--click="actions.open"' : ''; ?>
+				<?php echo $track_apply ? 'data-track="' . $track_apply . '"' : ''; ?>>
+				Apply Now
+			</a>
 		</div>
 	</header><!-- .header -->

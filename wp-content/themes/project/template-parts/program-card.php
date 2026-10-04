@@ -2,8 +2,9 @@
 /**
  * Reusable program card.
  *
- * Image, title, academic year, duration and the two calls to action on the
- * navy strip, exactly as the Figma screens show it.
+ * Matches the Figma programme card: image, then a navy body with a gold
+ * heading, a gold motif bar, the programme description and the academic
+ * year / duration meta, followed by the Apply and Enquire actions.
  *
  * Rendered with:
  *   get_template_part( 'template-parts/program-card', '', array( ... ) );
@@ -52,6 +53,8 @@ $track_apply = function_exists( 'program_track_attr' )
 $track_enquire = function_exists( 'program_track_attr' )
 	? program_track_attr( 'button', 'enquire-now', $section, 'componentButton' )
 	: '';
+
+$has_facts = '' !== $facts['year'] || '' !== $facts['duration'];
 ?>
 <li class="program-card"
 	data-wp-context='<?php echo esc_attr( wp_json_encode( array( 'id' => $program_id, 'type' => $type_slug ) ) ); ?>'
@@ -89,39 +92,52 @@ $track_enquire = function_exists( 'program_track_attr' )
 		</span>
 
 		<span class="program-card__body">
-			<span class="program-card__title"><?php echo esc_html( get_the_title( $program ) ); ?></span>
-
-			<span class="program-card__meta">
-				<?php if ( '' !== $facts['year'] ) : ?>
-					<span>
-						<?php
-						/* translators: %s: academic year, e.g. 2025-26. */
-						printf( esc_html__( 'Academic year %s', 'project' ), esc_html( $facts['year'] ) );
-						?>
-					</span>
-				<?php endif; ?>
-
-				<?php if ( '' !== $facts['duration'] ) : ?>
-					<span>
-						<?php
-						/* translators: %s: program duration, e.g. 3 Years. */
-						printf( esc_html__( 'Duration %s', 'project' ), esc_html( $facts['duration'] ) );
-						?>
-					</span>
-				<?php endif; ?>
+			<span class="program-card__heading-wrap">
+				<span class="program-card__heading"><?php echo esc_html( get_the_title( $program ) ); ?></span>
+				<span class="program-card__motif" aria-hidden="true"></span>
 			</span>
+
+			<?php if ( has_excerpt( $program ) ) : ?>
+				<span class="program-card__text"><?php echo esc_html( get_the_excerpt( $program ) ); ?></span>
+			<?php else : ?>
+				<span class="program-card__text"><?php echo esc_html( wp_trim_words( get_the_content( null, false, $program ), 22, '…' ) ); ?></span>
+			<?php endif; ?>
+
+			<?php if ( $has_facts ) : ?>
+				<span class="program-card__meta">
+					<?php if ( '' !== $facts['year'] ) : ?>
+						<span>
+							<?php
+							/* translators: %s: academic year, e.g. 2025-26. */
+							printf( esc_html__( 'Academic year %s', 'project' ), esc_html( $facts['year'] ) );
+							?>
+						</span>
+					<?php endif; ?>
+
+					<?php if ( '' !== $facts['duration'] ) : ?>
+						<span>
+							<?php
+							/* translators: %s: program duration, e.g. 3 Years. */
+							printf( esc_html__( 'Duration %s', 'project' ), esc_html( $facts['duration'] ) );
+							?>
+						</span>
+					<?php endif; ?>
+				</span>
+			<?php endif; ?>
 		</span>
 	</a>
 
 	<?php // Outside the card link: two separately focusable actions. ?>
 	<div class="program-card__actions" data-wp-interactive="programs/enquiry">
-		<a class="pm-button pm-button--primary"
+		<a class="pm-button pm-button--secondary"
 			href="<?php echo esc_url( Programs_Routing::get_apply_url( $program_id ) ); ?>"
+			data-wp-context='<?php echo esc_attr( wp_json_encode( array( 'programId' => $program_id, 'programTitle' => get_the_title( $program ) ) ) ); ?>'
+			data-wp-on--click="actions.open"
 			<?php echo $track_apply ? 'data-track="' . $track_apply . '"' : ''; ?>>
 			<?php esc_html_e( 'Apply now', 'project' ); ?>
 		</a>
 
-		<a class="pm-button pm-button--secondary"
+		<a class="pm-button pm-button--primary"
 			href="#programmes-enquiry"
 			data-wp-context='<?php echo esc_attr( wp_json_encode( array( 'programId' => $program_id, 'programTitle' => get_the_title( $program ) ) ) ); ?>'
 			data-wp-on--click="actions.open"

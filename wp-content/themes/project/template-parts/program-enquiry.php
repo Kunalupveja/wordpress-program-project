@@ -30,15 +30,31 @@ $programme_options = new WP_Query(
 	)
 );
 
-$dial_codes = array(
-	'+971' => __( 'UAE (+971)', 'project' ),
-	'+44'  => __( 'UK (+44)', 'project' ),
-	'+91'  => __( 'India (+91)', 'project' ),
-	'+92'  => __( 'Pakistan (+92)', 'project' ),
-	'+20'  => __( 'Egypt (+20)', 'project' ),
-	'+966' => __( 'Saudi Arabia (+966)', 'project' ),
-	'+63'  => __( 'Philippines (+63)', 'project' ),
-	'+1'   => __( 'USA / Canada (+1)', 'project' ),
+$enquirer_types = array(
+	'prospective-student' => __( 'Prospective student', 'project' ),
+	'parent'              => __( 'Parent or guardian', 'project' ),
+	'counsellor'          => __( 'School counsellor', 'project' ),
+	'agent'               => __( 'Agent', 'project' ),
+);
+
+$countries = array(
+	'india'    => __( 'India', 'project' ),
+	'bangladesh' => __( 'Bangladesh', 'project' ),
+	'nepal'    => __( 'Nepal', 'project' ),
+	'sri-lanka' => __( 'Sri Lanka', 'project' ),
+	'uae'      => __( 'United Arab Emirates', 'project' ),
+	'other'    => __( 'Other', 'project' ),
+);
+
+$cities = array(
+	'mumbai'       => __( 'Mumbai', 'project' ),
+	'delhi'        => __( 'Delhi', 'project' ),
+	'bengaluru'    => __( 'Bengaluru', 'project' ),
+	'chennai'      => __( 'Chennai', 'project' ),
+	'hyderabad'    => __( 'Hyderabad', 'project' ),
+	'pune'         => __( 'Pune', 'project' ),
+	'kolkata'      => __( 'Kolkata', 'project' ),
+	'other'        => __( 'Other', 'project' ),
 );
 ?>
 <div id="programmes-enquiry"
@@ -55,17 +71,12 @@ $dial_codes = array(
 		aria-label="<?php esc_attr_e( 'Close the enquiry form', 'project' ); ?>"></button>
 
 	<div class="enquiry__dialog" role="dialog" aria-modal="true" aria-labelledby="programmes-enquiry-title">
-		<button class="enquiry__close" type="button"
-			data-wp-on--click="actions.close"
-			aria-label="<?php esc_attr_e( 'Close the enquiry form', 'project' ); ?>">
-			<span aria-hidden="true">&times;</span>
-		</button>
-
-		<h2 class="enquiry__title" id="programmes-enquiry-title"><?php esc_html_e( 'Enquire now', 'project' ); ?></h2>
-
-		<p class="enquiry__subtitle">
-			<?php esc_html_e( 'Tell us what you are interested in and we will be in touch within two working days.', 'project' ); ?>
-		</p>
+		<div class="enquiry__head">
+			<h2 class="enquiry__title" id="programmes-enquiry-title"><?php esc_html_e( 'Register your interest', 'project' ); ?></h2>
+			<button class="enquiry__close" type="button"
+				data-wp-on--click="actions.close"
+				aria-label="<?php esc_attr_e( 'Close the enquiry form', 'project' ); ?>"></button>
+		</div>
 
 		<p class="enquiry__form-error"
 			data-wp-text="state.generalError"
@@ -78,107 +89,197 @@ $dial_codes = array(
 			data-nonce="<?php echo esc_attr( $nonce ); ?>">
 
 			<div class="enquiry__field">
-				<label class="enquiry__label" for="enquiry-programme">
-					<?php esc_html_e( 'Select programme', 'project' ); ?>
+				<label class="enquiry__label" for="enquiry-enquirer">
+					<?php esc_html_e( 'I am enquiring as', 'project' ); ?>
 					<span class="enquiry__required" aria-hidden="true">*</span>
 				</label>
-				<select class="enquiry__select" id="enquiry-programme" name="programme" required
+				<select class="enquiry__select" id="enquiry-enquirer" name="enquirer" required
 					data-enquiry-autofocus
-					data-wp-bind--value="state.programId">
-					<option value="0"><?php esc_html_e( 'Please choose…', 'project' ); ?></option>
-					<?php
-					while ( $programme_options->have_posts() ) :
-						$programme_options->the_post();
-						?>
-						<option value="<?php echo esc_attr( (string) get_the_ID() ); ?>">
-							<?php echo esc_html( get_the_title() ); ?>
-						</option>
-						<?php
-					endwhile;
-					wp_reset_postdata();
-					?>
+					data-wp-bind--aria-invalid="state.errorEnquirer">
+					<option value=""><?php esc_html_e( 'Select an option', 'project' ); ?></option>
+					<?php foreach ( $enquirer_types as $value => $label ) : ?>
+						<option value="<?php echo esc_attr( $value ); ?>"><?php echo esc_html( $label ); ?></option>
+					<?php endforeach; ?>
 				</select>
+				<span class="enquiry__error"
+					data-wp-text="state.errorEnquirer"
+					data-wp-bind--hidden="!state.errorEnquirer"></span>
 			</div>
 
-			<div class="enquiry__field">
-				<label class="enquiry__label" for="enquiry-name">
-					<?php esc_html_e( 'Full name', 'project' ); ?>
-					<span class="enquiry__required" aria-hidden="true">*</span>
-				</label>
-				<input class="enquiry__input" id="enquiry-name" name="name" type="text"
-					autocomplete="name" required
-					aria-describedby="enquiry-name-error"
-					data-wp-bind--aria-invalid="state.errorName" />
-				<span class="enquiry__error" id="enquiry-name-error"
-					data-wp-text="state.errorName"
-					data-wp-bind--hidden="!state.errorName"></span>
-			</div>
-
-			<div class="enquiry__field">
-				<label class="enquiry__label" for="enquiry-email">
-					<?php esc_html_e( 'Email address', 'project' ); ?>
-					<span class="enquiry__required" aria-hidden="true">*</span>
-				</label>
-				<input class="enquiry__input" id="enquiry-email" name="email" type="email"
-					autocomplete="email" required
-					aria-describedby="enquiry-email-error"
-					data-wp-bind--aria-invalid="state.errorEmail" />
-				<span class="enquiry__error" id="enquiry-email-error"
-					data-wp-text="state.errorEmail"
-					data-wp-bind--hidden="!state.errorEmail"></span>
-			</div>
-
-			<div class="enquiry__field">
-				<label class="enquiry__label" for="enquiry-phone">
-					<?php esc_html_e( 'Phone number', 'project' ); ?>
-				</label>
-				<div class="enquiry__phone">
-					<select class="enquiry__select" id="enquiry-dial-code" name="countryCode"
-						aria-label="<?php esc_attr_e( 'Country dialling code', 'project' ); ?>">
-						<?php foreach ( $dial_codes as $code => $label ) : ?>
-							<option value="<?php echo esc_attr( $code ); ?>" <?php selected( '+971', $code ); ?>>
-								<?php echo esc_html( $label ); ?>
-							</option>
+			<div class="enquiry__row">
+				<div class="enquiry__field">
+					<label class="enquiry__label" for="enquiry-level">
+						<?php esc_html_e( 'Level of interest', 'project' ); ?>
+						<span class="enquiry__required" aria-hidden="true">*</span>
+					</label>
+					<select class="enquiry__select" id="enquiry-level" name="level" required
+						data-wp-bind--aria-invalid="state.errorLevel"
+						data-wp-on--change="actions.syncProgrammes">
+						<option value=""><?php esc_html_e( 'Select an option', 'project' ); ?></option>
+						<?php
+						foreach ( Programs_CPT::get_program_types() as $level_term ) :
+							?>
+							<option value="<?php echo esc_attr( $level_term->slug ); ?>"><?php echo esc_html( $level_term->name ); ?></option>
 						<?php endforeach; ?>
 					</select>
-					<input class="enquiry__input" id="enquiry-phone" name="phone" type="tel"
-						autocomplete="tel"
-						aria-describedby="enquiry-phone-error"
-						data-wp-bind--aria-invalid="state.errorPhone" />
+					<span class="enquiry__error"
+						data-wp-text="state.errorLevel"
+						data-wp-bind--hidden="!state.errorLevel"></span>
 				</div>
-				<span class="enquiry__error" id="enquiry-phone-error"
-					data-wp-text="state.errorPhone"
-					data-wp-bind--hidden="!state.errorPhone"></span>
+
+				<div class="enquiry__field">
+					<label class="enquiry__label" for="enquiry-programme">
+						<?php esc_html_e( 'Programme of interest', 'project' ); ?>
+						<span class="enquiry__required" aria-hidden="true">*</span>
+					</label>
+					<select class="enquiry__select" id="enquiry-programme" name="programme" required
+						data-wp-bind--value="state.programId"
+						data-wp-bind--aria-invalid="state.errorProgramme">
+						<option value="0"><?php esc_html_e( 'Select an option', 'project' ); ?></option>
+						<?php
+						while ( $programme_options->have_posts() ) :
+							$programme_options->the_post();
+							$programme_type = project_program_type( get_the_ID() );
+							?>
+							<option value="<?php echo esc_attr( (string) get_the_ID() ); ?>"
+								<?php echo $programme_type ? 'data-type="' . esc_attr( $programme_type->slug ) . '"' : ''; ?>>
+								<?php echo esc_html( get_the_title() ); ?>
+							</option>
+						<?php endwhile; ?>
+						<?php wp_reset_postdata(); ?>
+					</select>
+					<span class="enquiry__error"
+						data-wp-text="state.errorProgramme"
+						data-wp-bind--hidden="!state.errorProgramme"></span>
+				</div>
 			</div>
 
-			<div class="enquiry__field">
-				<label class="enquiry__label" for="enquiry-message">
-					<?php esc_html_e( 'Your message', 'project' ); ?>
-				</label>
-				<textarea class="enquiry__textarea" id="enquiry-message" name="message" rows="4"></textarea>
+			<div class="enquiry__row">
+				<div class="enquiry__field">
+					<label class="enquiry__label" for="enquiry-first-name">
+						<?php esc_html_e( 'First name', 'project' ); ?>
+						<span class="enquiry__required" aria-hidden="true">*</span>
+					</label>
+					<input class="enquiry__input" id="enquiry-first-name" name="firstName" type="text"
+						autocomplete="given-name" required
+						aria-describedby="enquiry-first-name-error"
+						data-wp-bind--aria-invalid="state.errorFirstName" />
+					<span class="enquiry__error" id="enquiry-first-name-error"
+						data-wp-text="state.errorFirstName"
+						data-wp-bind--hidden="!state.errorFirstName"></span>
+				</div>
+
+				<div class="enquiry__field">
+					<label class="enquiry__label" for="enquiry-last-name">
+						<?php esc_html_e( 'Last name', 'project' ); ?>
+						<span class="enquiry__required" aria-hidden="true">*</span>
+					</label>
+					<input class="enquiry__input" id="enquiry-last-name" name="lastName" type="text"
+						autocomplete="family-name" required
+						aria-describedby="enquiry-last-name-error"
+						data-wp-bind--aria-invalid="state.errorLastName" />
+					<span class="enquiry__error" id="enquiry-last-name-error"
+						data-wp-text="state.errorLastName"
+						data-wp-bind--hidden="!state.errorLastName"></span>
+				</div>
 			</div>
 
-			<div class="enquiry__actions">
-				<button class="pm-button pm-button--primary" type="submit"
+			<div class="enquiry__row">
+				<div class="enquiry__field">
+					<label class="enquiry__label" for="enquiry-country">
+						<?php esc_html_e( 'Country', 'project' ); ?>
+						<span class="enquiry__required" aria-hidden="true">*</span>
+					</label>
+					<select class="enquiry__select" id="enquiry-country" name="country" required
+						data-wp-bind--aria-invalid="state.errorCountry">
+						<option value=""><?php esc_html_e( 'Select an option', 'project' ); ?></option>
+						<?php foreach ( $countries as $value => $label ) : ?>
+							<option value="<?php echo esc_attr( $value ); ?>"><?php echo esc_html( $label ); ?></option>
+						<?php endforeach; ?>
+					</select>
+					<span class="enquiry__error"
+						data-wp-text="state.errorCountry"
+						data-wp-bind--hidden="!state.errorCountry"></span>
+				</div>
+
+				<div class="enquiry__field">
+					<label class="enquiry__label" for="enquiry-city">
+						<?php esc_html_e( 'City', 'project' ); ?>
+						<span class="enquiry__required" aria-hidden="true">*</span>
+					</label>
+					<select class="enquiry__select" id="enquiry-city" name="city" required
+						data-wp-bind--aria-invalid="state.errorCity">
+						<option value=""><?php esc_html_e( 'Select an option', 'project' ); ?></option>
+						<?php foreach ( $cities as $value => $label ) : ?>
+							<option value="<?php echo esc_attr( $value ); ?>"><?php echo esc_html( $label ); ?></option>
+						<?php endforeach; ?>
+					</select>
+					<span class="enquiry__error"
+						data-wp-text="state.errorCity"
+						data-wp-bind--hidden="!state.errorCity"></span>
+				</div>
+			</div>
+
+			<div class="enquiry__row">
+				<div class="enquiry__field">
+					<label class="enquiry__label" for="enquiry-phone">
+						<?php esc_html_e( 'Phone number', 'project' ); ?>
+						<span class="enquiry__required" aria-hidden="true">*</span>
+					</label>
+					<div class="enquiry__phone">
+						<span class="enquiry__phone-prefix" aria-hidden="true">+91</span>
+						<input class="enquiry__input" id="enquiry-phone" name="phone" type="tel"
+							inputmode="numeric" pattern="[0-9]{10}" autocomplete="tel-national"
+							aria-describedby="enquiry-phone-error" required
+							data-wp-bind--aria-invalid="state.errorPhone" />
+					</div>
+					<span class="enquiry__error" id="enquiry-phone-error"
+						data-wp-text="state.errorPhone"
+						data-wp-bind--hidden="!state.errorPhone"></span>
+				</div>
+
+				<div class="enquiry__field">
+					<label class="enquiry__label" for="enquiry-email">
+						<?php esc_html_e( 'Email', 'project' ); ?>
+						<span class="enquiry__required" aria-hidden="true">*</span>
+					</label>
+					<input class="enquiry__input" id="enquiry-email" name="email" type="email"
+						autocomplete="email" required
+						aria-describedby="enquiry-email-error"
+						data-wp-bind--aria-invalid="state.errorEmail" />
+					<span class="enquiry__error" id="enquiry-email-error"
+						data-wp-text="state.errorEmail"
+						data-wp-bind--hidden="!state.errorEmail"></span>
+				</div>
+			</div>
+
+			<div class="enquiry__foot">
+				<p class="enquiry__consent">
+					<?php
+					esc_html_e( 'By clicking the button below, you agree to receive communications via Email/Call/WhatsApp/SMS about this academic program and other academic programs from University of Aberdeen or its trusted third-party partners and service providers.', 'project' );
+					?>
+					<a href="https://emeritus.org/privacy-notice/prospective-students" target="_blank" rel="noopener"><?php esc_html_e( 'Privacy Policy', 'project' ); ?></a>
+				</p>
+				<button class="enquiry__submit" type="submit"
 					data-wp-bind--disabled="state.isSubmitting">
-					<?php esc_html_e( 'Send', 'project' ); ?>
-				</button>
-				<button class="pm-button pm-button--secondary" type="button"
-					data-wp-on--click="actions.close">
-					<?php esc_html_e( 'Cancel', 'project' ); ?>
+					<?php esc_html_e( 'Submit', 'project' ); ?>
 				</button>
 			</div>
 		</form>
 
 		<div class="enquiry__thanks" hidden data-wp-bind--hidden="!state.isSent">
-			<div class="enquiry__thanks-mark" aria-hidden="true">&#10003;</div>
-			<h3 class="enquiry__thanks-title"><?php esc_html_e( 'Enquiry Submitted', 'project' ); ?></h3>
-			<p class="enquiry__thanks-text">
-				<?php esc_html_e( 'Thank you for contacting us. Your enquiry has been received and a member of our admissions team will be in touch within two working days.', 'project' ); ?>
-			</p>
-			<button class="pm-button pm-button--secondary" type="button" data-wp-on--click="actions.close">
-				<?php esc_html_e( 'Close', 'project' ); ?>
-			</button>
+			<div class="enquiry__thanks-toast" role="status">
+				<svg viewBox="0 0 24 24" width="32" height="32" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+				<p>
+					<strong><?php esc_html_e( 'Thank you for registering your interest', 'project' ); ?></strong>
+					<?php esc_html_e( "We'll send you helpful information and updates about this programme, the application process, and more.", 'project' ); ?>
+				</p>
+			</div>
+			<div class="enquiry__thanks-actions">
+				<button class="pm-button pm-button--secondary" type="button" data-wp-on--click="actions.close">
+					<?php esc_html_e( 'Close', 'project' ); ?>
+				</button>
+			</div>
 		</div>
 	</div>
 </div>

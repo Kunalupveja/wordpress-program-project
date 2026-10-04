@@ -97,6 +97,8 @@ $track_back = function_exists( 'program_track_attr' )
 			<div class="program-single__actions" data-wp-interactive="programs/enquiry">
 				<a class="pm-button pm-button--secondary"
 					href="<?php echo esc_url( Programs_Routing::get_apply_url( $program_id ) ); ?>"
+					data-wp-context='<?php echo esc_attr( wp_json_encode( array( 'programId' => $program_id, 'programTitle' => get_the_title() ) ) ); ?>'
+					data-wp-on--click="actions.open"
 					<?php echo $track_apply ? 'data-track="' . $track_apply . '"' : ''; ?>>
 					<?php esc_html_e( 'Apply now', 'project' ); ?>
 				</a>

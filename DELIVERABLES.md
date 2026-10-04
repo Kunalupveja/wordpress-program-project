@@ -7,9 +7,34 @@
 
 ---
 
-## ✅ Completion Status: 100%
+## ✅ Completion Status
 
-All 18 tasks completed successfully. All requirements met and exceeded expectations.
+All tasks in the brief are implemented and verified against the live site.
+The module was built in two passes: an initial build, then a design-fidelity
+pass (`feature/design-fidelity-fixes`) that aligned the theme with the
+reference HTML/CSS build and fixed the defects the first pass left behind.
+See **"Design fidelity pass"** below for the full list.
+
+---
+
+## 🔧 Design fidelity pass (`feature/design-fidelity-fixes`)
+
+The initial build functioned but did not match the reference design and
+carried several defects. Every one of these was fixed and verified:
+
+| Defect | Fix |
+| --- | --- |
+| Theme branding read "University of Sunderland / Dubai campus" | Database, `style.css` header and `functions.php` all updated to University of Aberdeen Mumbai |
+| `programs.css` duplicated the header/footer/hero/home styles already in `aberdeen-design.css`, so the stylesheets conflicted | `programs.css` rewritten to style **only** the module components, reading the shared `--abdn-*` tokens directly so the two files can never drift |
+| The conflict was "fixed" by disabling `programs.css`, which removed **all** module styling (cards, filter, pop-up, sticky bar) | Stylesheet re-enabled with an explicit dependency chain: `project-style` → `aberdeen-design` → `programs-css` |
+| The listing wrapper used `.programmes`, the same class `aberdeen-design.css` uses for the navy homepage band, so the listing rendered navy | Renamed to `.programmes-page` |
+| `taxonomy-program-type.php` hand-rolled its own card markup, so there were two card components and the taxonomy cards were untracked | It now renders the same `template-parts/program-card.php`, so there is exactly one card component (Task 5) and every instance is tracked |
+| The card did not match the Figma card | Rebuilt to the reference design: image, navy body, gold heading, gold motif bar, description, academic year / duration meta; Apply and Enquire sit below the card link so both stay focusable and no interactive control is nested in another |
+| `/programmes` rendered a flat grid | Programmes are now grouped and ordered by program type with a heading per type (Task 4); choosing a filter hides a whole group via `state.groupHidden` |
+| The pop-up did not match `register.html` | Rebuilt to the design: white dialog, the exact field set (enquiring as, level, programme, first/last name, country, city, phone with fixed `+91` prefix and 10-digit pattern, email, consent) and the green thank-you toast from `thank-you.html`; the REST handler validates the same fields against allow-lists |
+| "Apply now" linked to `/apply/`, which 404s | It now opens the enquiry pop-up (programme pre-selected); `get_apply_url()` still resolves a real `/apply` page when one exists, so a host can redirect the flow with one filter |
+| The pop-up only existed on programme screens, so the header "Apply now" had nothing to open | Pop-up and its module now load site-wide; the mobile sticky bar stays scoped to the programme screens |
+| The homepage "See More" links (Undergraduate, Postgraduate, Careers, fallbacks) carried no `data-track` | All four are tagged, so the whole site's navigation is measurable |
 
 ---
 
@@ -105,20 +130,24 @@ wp export --post_type=program --dir=exports/
 main (production)
   ← uat (user acceptance testing)
     ← dev (development)
-      ← feature/cpt-setup (completed feature)
+      ← feature/design-fidelity-fixes (design + defect fixes)
 ```
+
+All module work is done on `feature/*` branches and reaches `main` only by
+merging up the chain — no work is committed directly to `main`, `uat` or
+`dev`.
 
 **Merge History:**
 1. `feature/cpt-setup` → `dev` (with merge commit)
 2. `dev` → `uat` (with merge commit)
 3. `uat` → `main` (with release commit)
+4. `feature/design-fidelity-fixes` → `dev` → `uat` → `main` (design pass)
 
 **Commit Statistics:**
-- Total commits: 14
-- Feature commits: 10
-- Documentation commits: 3
-- Merge commits: 3
-- All commits follow conventional format
+- 18 commits across the feature branches
+- Every commit is a focused, meaningful change with a conventional message
+- Build files are committed as documented; `node_modules/`, `uploads/` and
+  `*.log` are gitignored
 
 **View Git History:**
 ```bash
@@ -493,10 +522,30 @@ wordpress-project/
 ## 💡 Known Limitations & Future Enhancements
 
 ### Current Limitations
-1. **No Remote Repository:** Git workflow simulated locally only
-2. **No Unit Tests:** Manual testing only (time constraint)
-3. **No Rate Limiting:** Tracking endpoint is public
-4. **No Log Cleanup:** Manual cleanup required (auto-cleanup documented)
+1. **No Remote Repository:** Git workflow demonstrated locally only
+2. **No Automated Tests:** Manual verification against the live site only
+   (see "Verification" below); no PHPUnit/Jest/Cypress suites
+3. **No Log Cleanup:** Logs rotate daily by filename but old files are not
+   deleted automatically
+
+### Verification (live site, this pass)
+
+| Check | Result |
+| --- | --- |
+| `/`, `/programmes`, `/programmes/undergraduate`, `/programmes/postgraduate`, `/programmes/{slug}` | all `200` |
+| PHP lint (`php -l`) on every changed theme/plugin file | no syntax errors |
+| JS syntax (`node --check`) on all three frontend modules | no syntax errors |
+| `POST /wp-json/programs/v1/track` | `200 {"logged":true}`; `page_url` populated from `Referer` |
+| `POST /wp-json/programs/v1/enquire` invalid payload | `400` with per-field errors |
+| `POST /wp-json/programs/v1/enquire` valid payload | `200 {"received":true}`; lead appended to `leads-YYYY-MM-DD.log` with `+91` prefix |
+| `/programmes` grouping | 10 cards under Undergraduate + Postgraduate headings |
+| Homepage See More links | all four carry `data-track` |
+| Header Apply now on a non-programme page | opens the pop-up (no 404) |
+| Error log | empty |
+
+Note: the tracking log lines in section 5 above are representative examples.
+Live logs are written to `wp-content/uploads/programs-tracking/`, which is
+gitignored — sample lines are reproduced here rather than committed.
 
 ### Recommended Enhancements (Phase 2)
 1. **Performance**
@@ -539,19 +588,22 @@ For questions about this project:
 
 ## ✨ Summary
 
-This project successfully implements a complete WordPress Programs Module from scratch, meeting all requirements and following industry best practices. The code is production-ready, well-documented, and follows a proper Git workflow.
+This project implements a complete WordPress Programs Module, meeting all
+requirements in the brief and matching the reference HTML/CSS design after a
+dedicated design-fidelity pass.
 
 **Key Achievements:**
-- ✅ 100% requirements completion
-- ✅ Clean, maintainable code
-- ✅ Comprehensive documentation
-- ✅ Proper Git workflow (feature → dev → uat → main)
-- ✅ Aberdeen Mumbai design fully integrated
-- ✅ Enterprise-grade click tracking
-- ✅ React admin UI with excellent UX
-- ✅ WordPress coding standards compliant
-- ✅ Accessible and responsive design
-- ✅ No third-party plugins used
+- ✅ Every task in the brief implemented and verified against the live site
+- ✅ Clean, maintainable code following WordPress coding standards
+- ✅ One reusable programme card component used everywhere it is needed
+- ✅ Aberdeen Mumbai design tokens shared by both stylesheets
+- ✅ Enterprise-grade click tracking (JSON Lines, LOCK_EX, allow-listed fields,
+  rate limiting, daily rotation, protected directory)
+- ✅ React admin UI with a drag-and-drop content-sections repeater
+- ✅ Interactivity API filter with `history.pushState` and REST fallback
+- ✅ Accessible and responsive design (3/2/1 grid, mobile sticky Enquire CTA)
+- ✅ No third-party plugins, no jQuery, no hardcoded URLs or IDs
+- ✅ Feature-branch workflow with PR-style merges up to `main`
 
 **Delivered within 8-hour timeframe as required.**
 

@@ -42,15 +42,17 @@ add_action( 'after_setup_theme', 'project_programs_image_sizes' );
 /**
  * Enqueues the programme stylesheet.
  *
+ * Registered in functions.php against the Aberdeen design system so the two
+ * stylesheets share one set of design tokens and cannot drift apart.
+ *
  * @return void
  */
 function project_programs_scripts() {
-	wp_enqueue_style(
-		'project-programs',
-		get_template_directory_uri() . '/assets/css/programs.css',
-		array(),
-		_S_VERSION
-	);
+	if ( ! project_has_programs_module() ) {
+		return;
+	}
+
+	wp_enqueue_style( 'programs-css' );
 }
 add_action( 'wp_enqueue_scripts', 'project_programs_scripts' );
 
