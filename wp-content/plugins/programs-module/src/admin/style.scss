@@ -1,0 +1,295 @@
+// Programs meta panel.
+// Custom styling on purpose: no .widefat / .form-table defaults are used,
+// so the panel does not look like the stock WordPress admin.
+
+$pm-border: #dfe3e8;
+$pm-border-strong: #c4ccd4;
+$pm-text: #1f2933;
+$pm-muted: #6b7785;
+$pm-accent: #1e3a8a;
+$pm-accent-soft: #eef2ff;
+$pm-danger: #b42318;
+$pm-danger-soft: #fef3f2;
+$pm-radius: 10px;
+
+.pm {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+	color: $pm-text;
+	font-size: 14px;
+	line-height: 1.5;
+}
+
+.pm-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 20px;
+	margin-bottom: 28px;
+
+	@media (max-width: 782px) {
+		grid-template-columns: 1fr;
+	}
+}
+
+.pm-field {
+	display: block;
+}
+
+.pm-field__label {
+	display: block;
+	font-weight: 600;
+	font-size: 13px;
+	margin-bottom: 6px;
+	color: $pm-text;
+}
+
+.pm-field__hint {
+	display: block;
+	margin-top: 6px;
+	font-size: 12px;
+	color: $pm-muted;
+}
+
+.pm-input {
+	display: block;
+	width: 100%;
+	box-sizing: border-box;
+	padding: 9px 12px;
+	border: 1px solid $pm-border-strong;
+	border-radius: 8px;
+	background: #fff;
+	font-size: 14px;
+	color: $pm-text;
+	transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+	&:hover {
+		border-color: #a8b2bd;
+	}
+
+	&:focus {
+		outline: none;
+		border-color: $pm-accent;
+		box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.15);
+	}
+}
+
+.pm-input--area {
+	resize: vertical;
+	min-height: 96px;
+}
+
+.pm-sections__head {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 14px;
+}
+
+.pm-sections__title {
+	margin: 0;
+	font-size: 14px;
+	font-weight: 700;
+}
+
+.pm-count {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 22px;
+	height: 22px;
+	padding: 0 7px;
+	border-radius: 11px;
+	background: $pm-accent-soft;
+	color: $pm-accent;
+	font-size: 12px;
+	font-weight: 700;
+}
+
+.pm-empty {
+	margin: 0 0 14px;
+	padding: 18px;
+	border: 1px dashed $pm-border-strong;
+	border-radius: $pm-radius;
+	background: #fafbfc;
+	color: $pm-muted;
+	text-align: center;
+}
+
+.pm-list {
+	list-style: none;
+	margin: 0 0 14px;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.pm-card {
+	border: 1px solid $pm-border;
+	border-radius: $pm-radius;
+	background: #fff;
+	overflow: hidden;
+	transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+	&:hover {
+		border-color: $pm-border-strong;
+	}
+
+	&--invalid {
+		border-color: rgba(180, 35, 24, 0.5);
+	}
+}
+
+.pm-card__head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 10px 12px;
+	background: #f7f8fa;
+	border-bottom: 1px solid $pm-border;
+}
+
+.pm-card__toggle {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex: 1;
+	padding: 4px 2px;
+	border: none;
+	background: none;
+	cursor: pointer;
+	font-size: 14px;
+	font-weight: 600;
+	color: $pm-text;
+	text-align: left;
+
+	&:focus {
+		outline: 2px solid $pm-accent;
+		outline-offset: 2px;
+	}
+}
+
+.pm-card__chevron {
+	color: $pm-muted;
+	font-size: 12px;
+	width: 12px;
+}
+
+.pm-card__index {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 22px;
+	height: 22px;
+	border-radius: 50%;
+	background: $pm-accent-soft;
+	color: $pm-accent;
+	font-size: 12px;
+	font-weight: 700;
+}
+
+.pm-card__label {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.pm-card__actions {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.pm-card__body {
+	padding: 16px;
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+}
+
+.pm-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 7px 13px;
+	border: 1px solid $pm-border-strong;
+	border-radius: 7px;
+	background: #fff;
+	color: $pm-text;
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background 0.15s ease, border-color 0.15s ease;
+
+	&:focus {
+		outline: 2px solid $pm-accent;
+		outline-offset: 2px;
+	}
+
+	&:disabled {
+		opacity: 0.4;
+		cursor: not-allowed;
+	}
+
+	// Declared after the states above but more specific, so it still wins.
+	&:hover:not(:disabled) {
+		background: #f2f4f7;
+	}
+}
+
+.pm-btn--icon {
+	min-width: 30px;
+	padding: 5px 7px;
+}
+
+.pm-btn--primary {
+	background: $pm-accent;
+	border-color: $pm-accent;
+	color: #fff;
+
+	&:hover:not(:disabled) {
+		background: #172f6e;
+	}
+}
+
+.pm-btn--danger {
+	color: $pm-danger;
+	border-color: rgba(180, 35, 24, 0.35);
+
+	&:hover:not(:disabled) {
+		background: $pm-danger-soft;
+	}
+}
+
+.pm-error {
+	margin: -6px 0 0;
+	color: $pm-danger;
+	font-size: 12px;
+}
+
+.pm-media {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.pm-media__preview {
+	width: 84px;
+	height: 64px;
+	object-fit: cover;
+	border-radius: 6px;
+	border: 1px solid $pm-border;
+	background: #f2f4f7;
+}
+
+// Fallback shown when JavaScript is unavailable.
+.programs-meta--fallback {
+	padding: 16px;
+	border: 1px solid $pm-border;
+	border-radius: $pm-radius;
+	background: #fff;
+}
+
+.pm-sections__head + .pm-list {
+	margin-top: 0;
+}

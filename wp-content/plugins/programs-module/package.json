@@ -1,0 +1,22 @@
+{
+  "name": "programs-module",
+  "version": "0.1.0",
+  "description": "Programs CPT, taxonomy, React admin UI, routing, Interactivity API filter and click tracking for the university site.",
+  "author": "Kunal",
+  "license": "GPL-2.0-or-later",
+  "private": true,
+  "scripts": {
+    "build": "wp-scripts build && npm run build:module",
+    "build:module": "node scripts/build-module.js",
+    "start": "wp-scripts start",
+    "check-engines": "wp-scripts check-engines",
+    "lint:js": "wp-scripts lint-js",
+    "lint:css": "wp-scripts lint-style",
+    "format": "wp-scripts format",
+    "packages-update": "wp-scripts packages-update"
+  },
+  "devDependencies": {
+    "@wordpress/scripts": "^30.0.0",
+    "typescript": "^5.9.3"
+  }
+}
