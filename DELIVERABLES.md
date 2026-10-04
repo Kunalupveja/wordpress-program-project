@@ -35,6 +35,9 @@ carried several defects. Every one of these was fixed and verified:
 | "Apply now" linked to `/apply/`, which 404s | It now opens the enquiry pop-up (programme pre-selected); `get_apply_url()` still resolves a real `/apply` page when one exists, so a host can redirect the flow with one filter |
 | The pop-up only existed on programme screens, so the header "Apply now" had nothing to open | Pop-up and its module now load site-wide; the mobile sticky bar stays scoped to the programme screens |
 | The homepage "See More" links (Undergraduate, Postgraduate, Careers, fallbacks) carried no `data-track` | All four are tagged, so the whole site's navigation is measurable |
+| The card typography did not match the reference build (20px heading, 15px body) | Now matches exactly: 32px/48px gold heading, 18px/28px cream body with 36px padding, 680/362 image, hover lift and image zoom |
+| The dialog label padding was 20px and the thank-you screen had an extra Close button the reference does not have | Label padding is 28px as in `register.html`; the thank-you screen uses the head close button alone, matching `thank-you.html` |
+| The header built its logo from an inline CSS crest, so the shipped `assets/images/logo.png` was never used | `project_site_logo()` falls back to that brand mark, and the header calls the helper, so the logo is drawn from one place |
 
 ---
 
@@ -542,6 +545,14 @@ wordpress-project/
 | Homepage See More links | all four carry `data-track` |
 | Header Apply now on a non-programme page | opens the pop-up (no 404) |
 | Error log | empty |
+| Header logo | renders the theme's `assets/images/logo.png` |
+| Card vs reference build | 32px/48px gold heading, 18px/28px cream body, 680/362 image, 24px radius, hover lift + image zoom |
+| Dialog vs `register.html` | same field set and order, `+91` prefix, 28px label padding, 780px white dialog |
+| Thank-you vs `thank-you.html` | green toast; the head close button is the only affordance |
+| REST filter (core collection) | `GET /wp-json/wp/v2/programs?program-types=5` returns the 5 UG ids |
+| CPT + taxonomy via REST | `program` with `programmes` archive; 5 Undergraduate + 5 Postgraduate terms |
+| Meta in the database | `program_academic_year`, `program_duration`, 3-row `program_content_sections` per programme |
+| Sticky mobile Enquire bar | present on programme screens only, absent on the homepage |
 
 Note: the tracking log lines in section 5 above are representative examples.
 Live logs are written to `wp-content/uploads/programs-tracking/`, which is
