@@ -34,20 +34,7 @@
 		</div>
 		<div class="top-bar">
 			<div class="logo">
-				<?php if ( has_custom_logo() ) : ?>
-					<?php the_custom_logo(); ?>
-				<?php else : ?>
-					<div class="logo-crest">
-						<div class="logo-crest-icon">
-							<span style="font-size:9px; line-height:1.1;">UNIV<br>ABDN</span>
-						</div>
-						<div class="logo-text-block">
-							<span class="logo-text-top">University of</span>
-							<span class="logo-name">ABERDEEN</span>
-							<span class="logo-sub">Mumbai</span>
-						</div>
-					</div>
-				<?php endif; ?>
+				<?php project_site_logo(); ?>
 			</div>
 			<nav class="nav" aria-label="<?php esc_attr_e( 'Primary menu', 'project' ); ?>">
 				<?php
