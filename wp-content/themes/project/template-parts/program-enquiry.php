@@ -275,11 +275,6 @@ $cities = array(
 					<?php esc_html_e( "We'll send you helpful information and updates about this programme, the application process, and more.", 'project' ); ?>
 				</p>
 			</div>
-			<div class="enquiry__thanks-actions">
-				<button class="pm-button pm-button--secondary" type="button" data-wp-on--click="actions.close">
-					<?php esc_html_e( 'Close', 'project' ); ?>
-				</button>
-			</div>
 		</div>
 	</div>
 </div>
