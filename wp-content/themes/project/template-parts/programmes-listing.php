@@ -58,7 +58,7 @@ $programs = new WP_Query(
 	)
 );
 ?>
-<div class="programmes"
+<div class="programmes-page"
 	data-wp-interactive="programs/filter"
 	data-wp-context='<?php echo esc_attr( wp_json_encode( array( 'counts' => $counts ) ) ); ?>'
 	data-wp-class--is-loading="state.isLoading">
@@ -121,23 +121,78 @@ $programs = new WP_Query(
 	</p>
 
 	<?php if ( $programs->have_posts() ) : ?>
-		<ul class="programmes__grid">
-			<?php
-			while ( $programs->have_posts() ) :
-				$programs->the_post();
 
-				get_template_part(
-					'template-parts/program-card',
-					'',
-					array(
-						'post'    => get_post(),
-						'active'  => $active,
-						'section' => 'programme-listing',
-					)
+		<?php
+		/*
+		 * Task 4: on /programmes the programs are grouped and ordered by
+		 * program type, with a heading per type. On a term archive the
+		 * grouping would repeat the term the visitor is already looking at,
+		 * so the flat grid is used there.
+		 */
+		$grouped = ! is_tax( Programs_CPT::TAXONOMY );
+		?>
+
+		<?php if ( $grouped ) : ?>
+
+			<?php foreach ( $terms as $group_term ) : ?>
+				<?php
+				// Re-run the same query per group so order stays explicit and
+				// the cards below stay in menu/title order within the group.
+				$group_posts = array_filter(
+					$programs->posts,
+					static function ( $post ) use ( $group_term ) {
+						$post_terms = wp_get_object_terms( $post->ID, Programs_CPT::TAXONOMY, array( 'fields' => 'slugs' ) );
+						return is_array( $post_terms ) && in_array( $group_term->slug, $post_terms, true );
+					}
 				);
-			endwhile;
-			?>
-		</ul>
+				?>
+				<?php if ( empty( $group_posts ) ) : ?>
+					<?php continue; ?>
+				<?php endif; ?>
+				<section class="programmes__group"
+					data-wp-context='<?php echo esc_attr( wp_json_encode( array( 'type' => $group_term->slug ) ) ); ?>'
+					data-wp-bind--hidden="state.groupHidden">
+					<h2 class="programmes__group-title"><?php echo esc_html( $group_term->name ); ?></h2>
+					<ul class="programmes__grid">
+						<?php
+						foreach ( $group_posts as $group_post ) {
+							setup_postdata( $group_post );
+
+							get_template_part(
+								'template-parts/program-card',
+								'',
+								array(
+									'post'    => $group_post,
+									'active'  => $active,
+									'section' => 'programme-listing',
+								)
+							);
+						}
+						?>
+					</ul>
+				</section>
+			<?php endforeach; ?>
+
+		<?php else : ?>
+			<ul class="programmes__grid">
+				<?php
+				while ( $programs->have_posts() ) :
+					$programs->the_post();
+
+					get_template_part(
+						'template-parts/program-card',
+						'',
+						array(
+							'post'    => get_post(),
+							'active'  => $active,
+							'section' => 'programme-listing',
+						)
+					);
+				endwhile;
+				?>
+			</ul>
+		<?php endif; ?>
+
 	<?php endif; ?>
 
 	<div class="programmes__empty" data-wp-bind--hidden="!state.isEmpty">

@@ -37,14 +37,69 @@ const { state } = store( 'programs/enquiry', {
 		errors: {},
 		programId: 0,
 		programTitle: '',
+		level: '',
 
 		/**
-		 * Inline error for the name field.
+		 * Inline error for the enquirer-type field.
 		 *
 		 * @return {string} The message, or an empty string.
 		 */
-		get errorName() {
-			return state.errors.name || '';
+		get errorEnquirer() {
+			return state.errors.enquirer || '';
+		},
+
+		/**
+		 * Inline error for the level-of-interest field.
+		 *
+		 * @return {string} The message, or an empty string.
+		 */
+		get errorLevel() {
+			return state.errors.level || '';
+		},
+
+		/**
+		 * Inline error for the programme field.
+		 *
+		 * @return {string} The message, or an empty string.
+		 */
+		get errorProgramme() {
+			return state.errors.programme || '';
+		},
+
+		/**
+		 * Inline error for the first-name field.
+		 *
+		 * @return {string} The message, or an empty string.
+		 */
+		get errorFirstName() {
+			return state.errors.firstName || '';
+		},
+
+		/**
+		 * Inline error for the last-name field.
+		 *
+		 * @return {string} The message, or an empty string.
+		 */
+		get errorLastName() {
+			return state.errors.lastName || '';
+		},
+
+		/**
+		 * Inline error for the country field.
+		 *
+		 * @return {string} The message, or an empty string.
+		 */
+		get errorCountry() {
+			return state.errors.country || '';
+		},
+
+		/**
+		 * Inline error for the city field.
+		 *
+		 * @return {string} The message, or an empty string.
+		 */
+		get errorCity() {
+			return state.errors.city || '';
 		},
 
 		/**
@@ -63,15 +118,6 @@ const { state } = store( 'programs/enquiry', {
 		 */
 		get errorPhone() {
 			return state.errors.phone || '';
-		},
-
-		/**
-		 * Label shown in the dialog heading.
-		 *
-		 * @return {string} The program title, or a generic heading.
-		 */
-		get heading() {
-			return state.programTitle || '';
 		},
 	},
 
@@ -94,10 +140,35 @@ const { state } = store( 'programs/enquiry', {
 
 			state.programId = Number( context.programId || 0 );
 			state.programTitle = context.programTitle || '';
+			state.level = '';
 			state.isSent = false;
 			state.isSubmitting = false;
 			state.generalError = '';
 			state.errors = {};
+
+			// Pre-select the programme that the trigger belongs to, so a
+			// card or detail page never has to be chosen again by hand.
+			if ( state.programId ) {
+				const form = getElement()
+					.ref.ownerDocument.getElementById( 'programmes-enquiry' )
+					?.querySelector( 'form' );
+
+				if ( form ) {
+					const level = form.querySelector(
+						`#enquiry-programme option[value="${ state.programId }"]`
+					)?.dataset?.type;
+
+					state.level = level || '';
+
+					if ( level ) {
+						const levelField = form.querySelector( '#enquiry-level' );
+						if ( levelField ) {
+							levelField.value = level;
+						}
+					}
+				}
+			}
+
 			state.isOpen = true;
 		},
 
@@ -119,6 +190,49 @@ const { state } = store( 'programs/enquiry', {
 			}
 
 			lastFocused = null;
+		},
+
+		/**
+		 * Keeps the programme dropdown in step with the chosen level.
+		 *
+		 * @param {Event} event The change event.
+		 */
+		syncProgrammes( event ) {
+			state.level = event.target.value || '';
+
+			const form = event.target.form;
+			if ( ! form ) {
+				return;
+			}
+
+			const programme = form.querySelector( '#enquiry-programme' );
+
+			if ( ! programme ) {
+				return;
+			}
+
+			// Hide programmes of the other level; the browser keeps the
+			// current selection only while it is still offered.
+			Array.from( programme.options ).forEach( ( option ) => {
+				if ( '0' === option.value ) {
+					return;
+				}
+
+				const matches =
+					'' === state.level || option.dataset.type === state.level;
+
+				option.hidden = ! matches;
+			} );
+
+			if (
+				'' !== state.level &&
+				programme.selectedOptions.length &&
+				'0' !== programme.selectedOptions[ 0 ].value &&
+				programme.selectedOptions[ 0 ].dataset.type !== state.level
+			) {
+				programme.value = '0';
+				state.programId = 0;
+			}
 		},
 
 		/**
@@ -181,12 +295,7 @@ const { state } = store( 'programs/enquiry', {
 			}
 
 			const data = new FormData( form );
-			const programmeField = form.elements.programme;
 			const programmeId = Number( data.get( 'programme' ) || 0 );
-			const programmeTitle =
-				programmeField && programmeField.selectedOptions.length
-					? programmeField.selectedOptions[ 0 ].textContent.trim()
-					: '';
 
 			if ( ! programmeId ) {
 				state.generalError = 'Please select a programme.';
@@ -197,10 +306,9 @@ const { state } = store( 'programs/enquiry', {
 			state.generalError = '';
 			state.errors = {};
 
-			// Keep the store in step with the dropdown, so the heading and
-			// the payload always describe the same programme.
+			// Keep the store in step with the dropdown, so the payload
+			// always describes the programme actually chosen.
 			state.programId = programmeId;
-			state.programTitle = programmeTitle;
 
 			try {
 				const response = yield window.fetch(
@@ -211,15 +319,15 @@ const { state } = store( 'programs/enquiry', {
 						method: 'POST',
 						headers: { 'Content-Type': 'application/json' },
 						body: JSON.stringify( {
-							name: String( data.get( 'name' ) || '' ),
-							email: String( data.get( 'email' ) || '' ),
-							phone: String( data.get( 'phone' ) || '' ),
-							countryCode: String(
-								data.get( 'countryCode' ) || ''
-							),
-							message: String( data.get( 'message' ) || '' ),
-							program: programmeTitle,
+							enquirer: String( data.get( 'enquirer' ) || '' ),
+							level: String( data.get( 'level' ) || '' ),
 							programId: programmeId,
+							firstName: String( data.get( 'firstName' ) || '' ),
+							lastName: String( data.get( 'lastName' ) || '' ),
+							country: String( data.get( 'country' ) || '' ),
+							city: String( data.get( 'city' ) || '' ),
+							phone: String( data.get( 'phone' ) || '' ),
+							email: String( data.get( 'email' ) || '' ),
 						} ),
 					}
 				);
